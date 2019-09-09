@@ -1,0 +1,45 @@
+buildscript {
+    ext {
+        springBootVersion = "2.0.6.RELEASE"
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+    }
+}
+
+
+plugins {
+    id "java"
+}
+
+apply plugin: 'org.springframework.boot'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
+    testCompile("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
+/*
+    compile("org.hibernate.validator:hibernate-validator:6.0.13.Final")
+    compile("org.springframework:spring-webmvc:5.0.10.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter:$springBootVersion")
+    compile("org.springframework.boot:spring-boot-starter-json:$springBootVersion")
+    compile("org.springframework.boot:spring-boot-starter-tomcat:$springBootVersion")
+
+ */
+}
+
+bootRun.environment([
+        "WELCOME_MESSAGE": "hello hichem",
+])
+
+test.environment([
+        "WELCOME_MESSAGE": "hello christophe",
+])
