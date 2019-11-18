@@ -15,6 +15,7 @@ buildscript {
 
 plugins {
     id "java"
+    id "eclipse"
 }
 
 apply plugin: 'org.springframework.boot'
