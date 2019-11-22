@@ -1,12 +1,11 @@
 package io.pivotal.pal.tracker;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Stream;
 
 @RestController
 public class EnvController {
@@ -16,7 +15,7 @@ public class EnvController {
     private String cfInstanceIndex;
     private String cfInstanceAddress;
 
-    public EnvController(@Value("${port:8080}")String port, @Value("${memory.limit:1000000}") String memoryLimit, @Value("${cf.instance.index:NOT SET}") String cfInstanceIndex, @Value("${cf.instance.addr:NOT SET}") String cfInstanceAddress) {
+    public EnvController(@Value("${port:${server.port:8080}}")String port, @Value("${memory.limit:1000000}") String memoryLimit, @Value("${cf.instance.index:NOT SET}") String cfInstanceIndex, @Value("${cf.instance.addr:NOT SET}") String cfInstanceAddress) {
         this.port = port;
         this.memoryLimit = memoryLimit;
         this.cfInstanceIndex = cfInstanceIndex;
