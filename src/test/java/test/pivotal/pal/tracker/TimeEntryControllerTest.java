@@ -1,21 +1,24 @@
 package test.pivotal.pal.tracker;
 
-import io.pivotal.pal.tracker.TimeEntry;
-import io.pivotal.pal.tracker.TimeEntryController;
-import io.pivotal.pal.tracker.TimeEntryRepository;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+import java.time.LocalDate;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import io.pivotal.pal.tracker.TimeEntry;
+import io.pivotal.pal.tracker.TimeEntryController;
+import io.pivotal.pal.tracker.TimeEntryRepository;
 
 public class TimeEntryControllerTest {
     private TimeEntryRepository timeEntryRepository;
@@ -40,7 +43,7 @@ public class TimeEntryControllerTest {
             .create(any(TimeEntry.class));
 
 
-        ResponseEntity response = controller.create(timeEntryToCreate);
+        ResponseEntity<?> response = controller.create(timeEntryToCreate);
 
 
         verify(timeEntryRepository).create(timeEntryToCreate);
@@ -101,7 +104,7 @@ public class TimeEntryControllerTest {
             .when(timeEntryRepository)
             .update(eq(timeEntryId), any(TimeEntry.class));
 
-        ResponseEntity response = controller.update(timeEntryId, expected);
+        ResponseEntity<?> response = controller.update(timeEntryId, expected);
 
         verify(timeEntryRepository).update(timeEntryId, expected);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -115,14 +118,14 @@ public class TimeEntryControllerTest {
             .when(timeEntryRepository)
             .update(eq(nonExistentTimeEntryId), any(TimeEntry.class));
 
-        ResponseEntity response = controller.update(nonExistentTimeEntryId, new TimeEntry());
+        ResponseEntity<?> response = controller.update(nonExistentTimeEntryId, new TimeEntry());
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
     public void testDelete() {
         long timeEntryId = 1L;
-        ResponseEntity response = controller.delete(timeEntryId);
+        ResponseEntity<?> response = controller.delete(timeEntryId);
         verify(timeEntryRepository).delete(timeEntryId);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
