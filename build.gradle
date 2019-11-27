@@ -1,3 +1,5 @@
+import org.flywaydb.gradle.task.FlywayMigrateTask
+
 buildscript {
     ext {
         springBootVersion = "2.0.6.RELEASE"
@@ -16,6 +18,7 @@ buildscript {
 plugins {
     id "java"
     id "eclipse"
+    id "org.flywaydb.flyway" version "5.2.4"
 }
 
 apply plugin: 'org.springframework.boot'
@@ -24,12 +27,21 @@ repositories {
     mavenCentral()
 }
 
+springBoot {
+    buildInfo()
+}
+
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
     compile("org.springframework.boot:spring-boot-starter-jdbc:$springBootVersion")
-    compile("mysql:mysql-connector-java:6.0.6")    
+    runtime("mysql:mysql-connector-java:6.0.6")   
+ 
+    compile("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
+    
     testCompile("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
     testCompile("org.mockito:mockito-core:2.23.4")
+
+    compile("com.h2database:h2:1.4.200")    
 /*
     compile("org.hibernate.validator:hibernate-validator:6.0.13.Final")
     compile("org.springframework:spring-webmvc:5.0.10.RELEASE")
@@ -40,12 +52,37 @@ dependencies {
  */
 }
 
+def developmentDbUrl = "jdbc:h2:mem:tracker-database-dev;MODE=MYSQL"
 bootRun.environment([
         "WELCOME_MESSAGE": "hello hichem",
-        "SPRING_DATASOURCE_URL": "jdbc:mysql://localhost:3306/tracker_dev?user=tracker&useSSL=false&useTimezone=true&serverTimezone=UTC&useLegacyDatetimeCode=false",
+        "MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE": "*",
+        "SPRING_FLYWAY_LOCATIONS": "classpath:databases/tracker/migrations",
+        "SPRING_DATASOURCE_URL": developmentDbUrl,
+        "SPRING_DATASOURCE_DRIVER_CLASS_NAME" : "org.h2.Driver", 
+        "SPRING_DATASOURCE_USERNAME" : "sa", 
+        "SPRING_DATASOURCE_PASSWORD" : "", 
+//        "SPRING_DATASOURCE_URL": "jdbc:mysql://localhost:3306/tracker_dev?user=tracker&useSSL=false&useTimezone=true&serverTimezone=UTC&useLegacyDatetimeCode=false",
 ])
 
+def testDbUrl = "jdbc:h2:mem:tracker-database-test;MODE=MYSQL"
 test.environment([
         "WELCOME_MESSAGE": "hello christophe",
-        "SPRING_DATASOURCE_URL": "jdbc:mysql://localhost:3306/tracker_test?user=tracker&useSSL=false&useTimezone=true&serverTimezone=UTC&useLegacyDatetimeCode=false",
+        "MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE": "*",
+        "SPRING_FLYWAY_LOCATIONS": "classpath:databases/tracker/migrations",
+        "SPRING_DATASOURCE_URL": testDbUrl,
+        "SPRING_DATASOURCE_DRIVER_CLASS_NAME" : "org.h2.Driver", 
+        "SPRING_DATASOURCE_USERNAME" : "sa", 
+        "SPRING_DATASOURCE_PASSWORD" : "", 
 ])
+
+flyway {
+    url = developmentDbUrl
+    user = "sa"
+    password = ""
+    locations = ["filesystem:databases/tracker/migrations"]
+}
+
+task testMigrate(type: FlywayMigrateTask) {
+    url = testDbUrl
+}
+
